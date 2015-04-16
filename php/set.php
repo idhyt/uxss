@@ -5,15 +5,17 @@ header("Content-Type:application/json;charset=UTF-8");
 $code = $_GET['code'];
 $poc_suc = $_GET['suc'];
 $ua = $_SERVER['HTTP_USER_AGENT'];
+//$code = "20150416091712||26C6A3BB27158AFDAF450392D784D2";
+//$poc_suc = "2";
 $poc = array(
-        1=> "poc_1",
-        2=> "poc_2",
+        1 => "poc_1",
+        2 => "poc_2",
         3 => "poc_3",
         4 => "poc_4",
         5 => "poc_5",
         6 => "poc_6",
         7 => "poc_7",
-        8 =>"poc_8"
+        8 => "poc_8"
     );
 
 //参数 suc判断
@@ -28,7 +30,8 @@ if(strpos($code, "||") == false){
     exit();
 }
 
-list($key, $value) = explode("||", $code);  // $key = token, $value = code
+// $key = token, $value = code
+list($key, $value) = explode("||", $code);
 
 // 验证token
 if ($value != strtoupper(substr(md5("idhyt". $key ."android"), 1, -1)) ){
@@ -36,35 +39,33 @@ if ($value != strtoupper(substr(md5("idhyt". $key ."android"), 1, -1)) ){
     exit();
 }
 
+
+$conn = mysqli_connect("localhost", "root", "", "vul_info");
+
+$select_sql = "select id from uxss where code ='" . $code . "'";
+$data = mysqli_query($conn, $select_sql);
+
+// 获取id
 $id = 0;
-
-$mysql = new SaeMysql();
-$sql = "select id from result where code ='" . $mysql->escape($code) . "'";
-
-$data = $mysql->getData($sql);
-
-if(!$data){
-    //   	$insert_sql = "insert into result (`code`, `ua`) values ('" .$mysql->escape($code) . "','". $mysql->escape($ua)  ."')";
-    //$mysql->runSql($insert_sql);
-    //if ($mysql->errno() != 0){
-    //		echo json_encode(array("status" => false, "msg" => "mysql error!"));
-    //		exit();
-    //}
-    //$id = $mysql->lastId();
+if($data && $data->num_rows > 0){
+    while($row = mysqli_fetch_array($data, MYSQL_ASSOC)) {
+        $id = $row["id"];
+        break;
+    }
+}else{
     echo json_encode(array("status" => false, "msg" => "请刷新后重试!"));
     exit();
-}else{
-	$id = intval($data[0]["id"]);
 }
 
-$update_sql = "update result set $poc[$poc_suc] = 1 where id = {$id} and code ='" . $mysql->escape($code). "'";
-$mysql->runSql($update_sql);
-if($mysql->error() != 0){
-	    echo json_encode(array("status" => false, "msg" => "update error!"));
-   		exit();
+// 更新测试poc状态
+$update_sql = "update uxss set $poc[$poc_suc] = 1 where id = {$id} and code ='" . $code. "'";
+$data = mysqli_query($conn, $update_sql);
+if (!$data){
+    echo json_encode(array("status" => false, "msg" => "update error!"));
+    exit();
 }
 
-$mysql->closeDb();
 
+mysqli_close($conn);
 echo json_encode(array("status" => true, "msg" => "update success!"));
 exit();

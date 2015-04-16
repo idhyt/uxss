@@ -18,11 +18,10 @@ if (!$conn){
 }
 
 $select_sql = "select id,code from uxss where token ='" . $token . "'";
-$data = mysqli_query($conn,$select_sql);
+$data = mysqli_query($conn, $select_sql);
 
-if($data->num_rows > 0){
-    while($row = mysqli_fetch_array($data, MYSQL_ASSOC))
-    {
+if($data && $data->num_rows > 0){
+    while($row = mysqli_fetch_array($data, MYSQL_ASSOC)) {
         $code = $row["code"];
         break;
     }

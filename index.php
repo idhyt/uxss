@@ -26,54 +26,58 @@
         <div id="testing"></div>
 
         <script type="text/javascript">
-            var resultView = function(resultArr){
-                var viewHtml = "";
-                var allPocInfo = getAllPocInfo();
-                var allPocLength = allPocInfo.allPocNum;
-                var allPocHtml = allPocInfo.allPocHtml;
 
-                var resultArrLength = resultArr.length;
-                if(resultArrLength == 0){   //未发现漏洞
+            var emptyIframe = function(){
+                for(var i = 1; i <= window.allPocInfo.allPocNum; i++ )  {
+                    $("#poc" + i).attr("src","");
+                }
+            };
+
+            var resultView = function(hasExpArr){
+                var viewHtml = "";
+                var allPocLength = window.allPocInfo.allPocNum;
+                var allPocHtml = window.allPocInfo.allPocHtml;
+
+                var hasExpLength = hasExpArr.length;
+
+                if(hasExpLength == 0){
+                    // 未发现漏洞
                     viewHtml = resultViewHtml.replace("<bugpoctitle>", "未发现漏洞，详情如下：")
-                    viewHtml = viewHtml.replace("<bugpoccontent>", "使用总共的"+allPocLength+"个poc测试，未发现漏洞存在");
+                    viewHtml = viewHtml.replace("<bugpoccontent>", "使用总共的" + allPocLength + "个poc测试，未发现漏洞存在");
                 }else{
-                    //统计漏洞信息
+                    // 统计漏洞信息
                     var tmpHtml = "";
-                    for(i = 0; i< resultArrLength; i++){
-                        tmpHtml += "<p>存在漏洞：" + poc[resultArr[i]] + "</p>";
+                    for(var i = 0; i< hasExpLength; i++){
+                        tmpHtml += "<p>存在漏洞：" + allPoc[hasExpArr[i]] + "</p>";
                     }
-                    viewHtml = resultViewHtml.replace("<bugpoctitle>", "发现了"+resultArrLength+"个漏洞，详情如下：");
+                    viewHtml = resultViewHtml.replace("<bugpoctitle>", "发现了" + hasExpLength + "个漏洞，详情如下：");
                     viewHtml = viewHtml.replace("<bugpoccontent>", tmpHtml);
                 }
-                viewHtml = viewHtml.replace("<totoalpoctest>", allPocLength);
+                viewHtml = viewHtml.replace("<totoalpoctest>", allPocLength.toString());
                 viewHtml = viewHtml.replace("<allpoccontent>", allPocHtml);
 
                 $("#testing").html(viewHtml);
                 $(".btn-primary").text("测试完成");
             };
 
-            var getResult = function(code){//返回结果
-                $.getJSON("/get.php?code=" + code, function(data){
+            var getResult = function(code){
+                $.getJSON("./php/get.php?code=" + code, function(data){
+                    // 返回结果
+                    var hasExpArr = new Array();
                     var resultArr = new Array();
-//                    var resultHtml  =  $("#testing").html();
-//                    resultHtml += "<p>测试结果:</p>";
-
                     if(data.status == true){
-                        result = data.msg;
-                        for(i in result){
-                            if (result[i] == 1){    //表示存在问题
-                                //result_html += "<p>存在" + i + "漏洞</p>";
-                                resultArr.push(i);
+                        resultArr = data.msg;
+                        for(i in resultArr){
+                            if (resultArr[i] == 1){
+                                // 1表示存在漏洞
+                                // resultHtml += "<p>存在" + i + "漏洞</p>";
+                                hasExpArr.push(i);
                             }
                         }
                     }
-
-                    resultView(resultArr);
+                    resultView(hasExpArr);
                     // 清空iframe
-                    for(var j=1; j< 10; j++){
-                        $("#poc" + j).attr("src","");
-                    }
-
+                    emptyIframe();
                 });
             };
 
@@ -82,15 +86,17 @@
                     $("#testing").html("<p>开始测试..............</p>")
                 }
 
-                if(testIndex == window.allPocInfo.allPocNum + 1){
+                if(testIndex > window.allPocInfo.allPocNum ){
                     var tmpHtml = $("#testing").html();
                     tmpHtml += "<p>测试完成..................</p>";
                     $("#testing").html(tmpHtml);
                     clearInterval(window.timer);
 
                     $(".btn-primary").text("统计结果中.....");
-                    // 3秒后取结果
-                    setTimeout("getResult(code)", 3000);
+
+                    // 2秒后取结果
+                    // setTimeout("getResult(code)",3000);
+                    setTimeout(getResult, 2000, code);
                     return;
                 }
 
@@ -99,7 +105,8 @@
                 $("#testing").html(testHtml);
 
                 var iframeSrc = testIndex + ".php?code=" + code;
-                $("#poc" + testIndex ).attr("src","poc/" + iframeSrc);
+                $("#poc" + testIndex ).attr("src","./poc/" + iframeSrc);
+                // $("#poc").attr("src","./poc/" + iframeSrc);
 
                 var progress = testIndex / window.allPocInfo.allPocNum;
                 progress = progress.toFixed(2) * 100 + "%";
@@ -108,10 +115,7 @@
             };
 
             var start = function(token){
-                window.pocIndex = 0;
-                //payload的个数
-                window.allPocInfo = getAllPocInfo();
-                $.getJSON("php/getcode.php?token=" + token, function(data){
+                $.getJSON("./php/getcode.php?token=" + token, function(data){
                     if(data.status == true){
                         var code = data.code;
                         window.pocIndex += 1;
@@ -122,21 +126,22 @@
                     }
                 });
             };
-
+            // 全局变量
+            window.pocIndex = 0;
+            // payload信息
+            window.allPocInfo = getAllPocInfo();
+            // token
             var token = "<?php echo substr(md5('idhyt'.md5(time())), 3,10 );?>";
             window.timer = window.setInterval("start(token)", 1000);
 
         </script>
-
+        <iframe id="poc" width=0 height=0></iframe>
         <iframe id="poc1" width=0 height=0></iframe>
-        <iframe id="poc2" width=0 height=0>CVE-2014-6041</iframe>
+        <iframe id="poc2" name = "CVE-2014-6041" width=0 height=0></iframe>
         <iframe id="poc3" width=0 height=0></iframe>
         <iframe id="poc4" width=0 height=0></iframe>
         <iframe id="poc5" width=0 height=0></iframe>
         <iframe id="poc6" width=0 height=0></iframe>
-        <iframe id="poc7" width=0 height=0></iframe>
-        <iframe id="poc8" width=0 height=0></iframe>
-        <iframe id="poc9" width=0 height=0></iframe>
     </body>
 </html>
     

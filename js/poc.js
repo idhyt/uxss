@@ -5,7 +5,7 @@ var allPoc = {
     'poc_4' : 'https://code.google.com/p/chromium/issues/detail?id=98053',
     'poc_5' : 'https://code.google.com/p/chromium/issues/detail?id=117550',
     'poc_6' : 'https://code.google.com/p/chromium/issues/detail?id=90222'
-}
+};
 
 var resultViewHtml = '<div class="panel-group" id="accordion">\
 <div class="panel panel-default">\
