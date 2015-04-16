@@ -9,7 +9,7 @@
         parentFrame = document.body.appendChild(document.createElement("iframe"));
         helperFrame1 = parentFrame.contentDocument.body.appendChild(document.createElement("iframe"));
         helperFrame1.contentWindow.onunload = function() {
-            container = document.createElement("div");
+            var container = document.createElement("div");
             targetFrame  = container.appendChild(document.createElement("iframe"));
             helperFrame2 = targetFrame.appendChild(document.createElement("iframe"));
             helperFrame2.src = "javascript:top.container.removeChild(top.targetFrame)";

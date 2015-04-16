@@ -20,8 +20,7 @@
 <html>
     <head>
         <script>
-            main = function()
-            {
+            var test = function() {
                 specialFrame = document.body.appendChild(document.createElement("iframe"));
 
                 document.adoptNode(specialFrame);
@@ -29,7 +28,7 @@
 
                 specialFrame.contentWindow.location = "http://m.baidu.com/";
 
-                interval1 = setInterval(function() {
+                var interval1 = setInterval(function() {
                     if (specialFrame.contentDocument)
                         return;
                     clearInterval(interval1);
@@ -44,5 +43,5 @@
             }
         </script>
     </head>
-    <body onload="main()"></body>
+    <body onload="test()"></body>
 </html>
