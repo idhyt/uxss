@@ -1,6 +1,7 @@
 <?php
     //漏洞编号：143437
-    include "config.php";
+    include "../config/config.php";
+
     $code = htmlspecialchars(strip_tags($_GET['code']),ENT_QUOTES);
 ?>
 <body>

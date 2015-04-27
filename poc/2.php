@@ -1,7 +1,7 @@
 <?php
     // CVE-2014-6041
     // google漏洞编号 37383
-    include "config.php";
+    include "../config/config.php";
 
     $code = $_GET['code'];
     $code = htmlspecialchars(strip_tags($code), ENT_QUOTES);

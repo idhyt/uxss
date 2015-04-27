@@ -1,6 +1,6 @@
 <?php
     //漏洞编号：98053
-    include "config.php";
+    include "../config/config.php";
 
     $code = htmlspecialchars(strip_tags($_GET['code']),ENT_QUOTES);
 

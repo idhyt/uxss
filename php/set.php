@@ -1,6 +1,6 @@
 <?php
-
     header("Content-Type:application/json;charset=UTF-8");
+    include "../config/config.php";
 
     $code = $_GET['code'];
     $poc_suc = $_GET['suc'];
@@ -38,7 +38,12 @@
     }
 
 
-    $conn = mysqli_connect("localhost", "root", "", "vul_info");
+    $conn = mysqli_connect(
+        $DB_CONFIG_UXSS["DB_HOST"],
+        $DB_CONFIG_UXSS["DB_USER"],
+        $DB_CONFIG_UXSS["DB_PWD"],
+        $DB_CONFIG_UXSS["DB_NAME"]
+    );
 
     $select_sql = "select id from uxss where code ='" . $code . "'";
     $data = mysqli_query($conn, $select_sql);

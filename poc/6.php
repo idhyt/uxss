@@ -1,6 +1,7 @@
 <?php
     //漏洞编号90222
-    include "config.php";
+    include "../config/config.php";
+
     $code = htmlspecialchars(strip_tags($_GET['code']),ENT_QUOTES);
     $setPhp = $DOMAIN."/php/set.php?code=".$code."&suc=6";
     $str = "var flag=0;suc();function suc(){if(flag){return;}if(document.domain == 'm.baidu.com'){flag=1;new Image().src='".$setPhp."';}}";

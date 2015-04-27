@@ -1,5 +1,6 @@
 <?php
     header("Content-Type:application/json;charset=UTF-8");
+    include "../config/config.php";
 
     $token = $_GET['token'];
     // $token = "8efa17e847";
@@ -10,7 +11,13 @@
         exit();
     }
 
-    $conn = mysqli_connect("localhost", "root", "", "vul_info");
+//    $conn = mysqli_connect("localhost", "root", "", "vul_info");
+    $conn = mysqli_connect(
+        $DB_CONFIG_UXSS["DB_HOST"],
+        $DB_CONFIG_UXSS["DB_USER"],
+        $DB_CONFIG_UXSS["DB_PWD"],
+        $DB_CONFIG_UXSS["DB_NAME"]
+    );
 
     if (!$conn){
         echo json_encode(array("status" => false, "msg" => "mysql connect error!"));
